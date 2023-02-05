@@ -12,7 +12,7 @@ class ProductsOverviewScreen extends StatelessWidget {
         title: const Text('Shop app'),
         centerTitle: true,
       ),
-      body: ProductsGrid(),
+      body: const ProductsGrid(),
     );
   }
 }
