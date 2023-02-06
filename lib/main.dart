@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
+import './screens/cart_screen.dart';
+import './providers/cart_provider.dart';
 import './screens/products_overview_screen.dart';
 import './screens/product_detail_screen.dart';
 import './providers/products_provider.dart';
@@ -21,28 +23,36 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return DynamicColorBuilder(builder: (lightColorScheme, darkColorScheme) {
-      return ChangeNotifierProvider(
-        create: (context) => ProductsProvider(),
-        child: MaterialApp(
-          title: 'Flutter Demo',
-          theme: ThemeData(
-            colorScheme: lightColorScheme ?? MyApp._defaultLightColorScheme,
-            useMaterial3: true,
-            fontFamily: 'Lato'
+    return DynamicColorBuilder(
+      builder: (lightColorScheme, darkColorScheme) {
+        return MultiProvider(
+          providers: [
+            ChangeNotifierProvider(
+              create: (context) => ProductsProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (context) => CartProvider(),
+            ),
+          ],
+          child: MaterialApp(
+            title: 'Flutter Demo',
+            theme: ThemeData(
+                colorScheme: lightColorScheme ?? MyApp._defaultLightColorScheme,
+                useMaterial3: true,
+                fontFamily: 'Lato'),
+            darkTheme: ThemeData(
+                colorScheme: darkColorScheme ?? MyApp._defaultDarkColorScheme,
+                useMaterial3: true,
+                fontFamily: 'Lato'),
+            themeMode: ThemeMode.system,
+            home: const ProductsOverviewScreen(),
+            routes: {
+              ProductDetailScreen.routeName: (context) => const ProductDetailScreen(),
+              CartScreen.routeName: (context) => const CartScreen(),
+            },
           ),
-          darkTheme: ThemeData(
-            colorScheme: darkColorScheme ?? MyApp._defaultDarkColorScheme,
-            useMaterial3: true,
-            fontFamily: 'Lato'
-          ),
-          themeMode: ThemeMode.system,
-          home: const ProductsOverviewScreen(),
-          routes: {
-            ProductDetailScreen.routeName:(context) => const ProductDetailScreen(),
-          },
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 }
