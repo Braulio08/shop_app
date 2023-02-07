@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
+import './screens/orders_screen.dart';
+import './providers/orders_provider.dart';
 import './screens/cart_screen.dart';
 import './providers/cart_provider.dart';
 import './screens/products_overview_screen.dart';
@@ -33,6 +35,9 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(
               create: (context) => CartProvider(),
             ),
+            ChangeNotifierProvider(
+              create: (context) => OrdersProvider(),
+            ),
           ],
           child: MaterialApp(
             title: 'Flutter Demo',
@@ -49,6 +54,7 @@ class MyApp extends StatelessWidget {
             routes: {
               ProductDetailScreen.routeName: (context) => const ProductDetailScreen(),
               CartScreen.routeName: (context) => const CartScreen(),
+              OrdersScreen.routeName: (context) => const OrdersScreen(),
             },
           ),
         );
