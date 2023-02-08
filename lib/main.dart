@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
+import './screens/edit_product_screen.dart';
+import './screens/user_products_screen.dart';
 import './screens/orders_screen.dart';
 import './providers/orders_provider.dart';
 import './screens/cart_screen.dart';
@@ -55,6 +57,8 @@ class MyApp extends StatelessWidget {
               ProductDetailScreen.routeName: (context) => const ProductDetailScreen(),
               CartScreen.routeName: (context) => const CartScreen(),
               OrdersScreen.routeName: (context) => const OrdersScreen(),
+              UserProductsScreen.routeName: (context) => const UserProductsScreen(),
+              EditProductScreen.routeName: (context) => const EditProductScreen(),
             },
           ),
         );
