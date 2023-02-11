@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import './product.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ProductsProvider with ChangeNotifier {
-  final List<Product> _items = [
+  List<Product> _items = [
     Product(
       id: 'p1',
       title: 'Red Shirt',
@@ -41,16 +43,57 @@ class ProductsProvider with ChangeNotifier {
     return [..._items];
   }
 
-  void addProduct(Product product) {
-    final newProduct = Product(
-        id: DateTime.now().toString(),
-        title: product.title,
-        description: product.description,
-        price: product.price,
-        imageUrl: product.imageUrl);
-    _items.add(newProduct);
-    //_items.insert(0, newProduct);
-    notifyListeners();
+  Future<void> fetchAndSerProducts() async {
+    var url = Uri.https(
+        'flutter-example-2df85-default-rtdb.firebaseio.com', '/products.json');
+    try {
+      final response = await http.get(url);
+      final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      final List<Product> loadedProducts = [];
+      extractedData.forEach(
+        (prodId, prodData) {
+          loadedProducts.add(
+            Product(
+              id: prodId,
+              title: prodData['title'],
+              description: prodData['description'],
+              price: prodData['price'],
+              imageUrl: prodData['imageUrl'],
+              isFavorite: prodData['isFavorite'],
+            ),
+          );
+        },
+      );
+      _items = loadedProducts;
+      notifyListeners();
+    } on Exception catch (e) {
+      throw e;
+    }
+  }
+
+  Future<void> addProduct(Product product) async {
+    var url = Uri.https(
+        'flutter-example-2df85-default-rtdb.firebaseio.com', '/products.json');
+    try {
+      final response = await http.post(url,
+          body: json.encode({
+            'title': product.title,
+            'description': product.description,
+            'imageUrl': product.imageUrl,
+            'price': product.price,
+            'isFavorite': product.isFavorite,
+          }));
+      final newProduct = Product(
+          id: json.decode(response.body)['name'],
+          title: product.title,
+          description: product.description,
+          price: product.price,
+          imageUrl: product.imageUrl);
+      _items.add(newProduct);
+      notifyListeners();
+    } on Exception catch (e) {
+      throw e;
+    }
   }
 
   List<Product> get favoriteItems {
