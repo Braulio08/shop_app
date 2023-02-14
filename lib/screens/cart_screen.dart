@@ -30,15 +30,10 @@ class CartScreen extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const Spacer(),
-                  Chip(label: Text('\$${cartProvider.totalAmount.toStringAsFixed(2)}')),
-                  TextButton(
-                      onPressed: () {
-                        Provider.of<OrdersProvider>(context, listen: false)
-                            .addOrder(cartProvider.items.values.toList(),
-                                cartProvider.totalAmount);
-                        cartProvider.clear();
-                      },
-                      child: const Text('ORDER NOW'))
+                  Chip(
+                      label: Text(
+                          '\$${cartProvider.totalAmount.toStringAsFixed(2)}')),
+                  OrderButton(cartProvider: cartProvider)
                 ],
               ),
             ),
@@ -54,6 +49,44 @@ class CartScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class OrderButton extends StatefulWidget {
+  const OrderButton({
+    super.key,
+    required this.cartProvider,
+  });
+
+  final CartProvider cartProvider;
+
+  @override
+  State<OrderButton> createState() => _OrderButtonState();
+}
+
+class _OrderButtonState extends State<OrderButton> {
+  bool _isLoading = false;
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: (widget.cartProvider.totalAmount <= 0 || _isLoading)
+          ? null
+          : () async {
+              setState(() {
+                _isLoading = true;
+              });
+              await Provider.of<OrdersProvider>(context, listen: false)
+                  .addOrder(
+                widget.cartProvider.items.values.toList(),
+                widget.cartProvider.totalAmount,
+              );
+              setState(() {
+                _isLoading = false;
+              });
+              widget.cartProvider.clear();
+            },
+      child: _isLoading ? const CircularProgressIndicator() : const Text('ORDER NOW'),
     );
   }
 }
