@@ -10,6 +10,7 @@ import './screens/products_overview_screen.dart';
 import './screens/product_detail_screen.dart';
 import './providers/products_provider.dart';
 import 'package:provider/provider.dart';
+import './screens/auth_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -52,7 +53,7 @@ class MyApp extends StatelessWidget {
                 useMaterial3: true,
                 fontFamily: 'Lato'),
             themeMode: ThemeMode.system,
-            home: const ProductsOverviewScreen(),
+            home: const AuthScreen(),
             routes: {
               ProductDetailScreen.routeName: (context) => const ProductDetailScreen(),
               CartScreen.routeName: (context) => const CartScreen(),
