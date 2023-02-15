@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 import './screens/auth_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-Future main() async{
+Future main() async {
   await dotenv.load(fileName: ".env");
   runApp(const MyApp());
 }
@@ -48,25 +48,29 @@ class MyApp extends StatelessWidget {
               create: (context) => AuthProvider(),
             ),
           ],
-          child: MaterialApp(
-            title: 'Flutter Demo',
-            theme: ThemeData(
-                colorScheme: lightColorScheme ?? MyApp._defaultLightColorScheme,
-                useMaterial3: true,
-                fontFamily: 'Lato'),
-            darkTheme: ThemeData(
-                colorScheme: darkColorScheme ?? MyApp._defaultDarkColorScheme,
-                useMaterial3: true,
-                fontFamily: 'Lato'),
-            themeMode: ThemeMode.system,
-            home: const AuthScreen(),
-            routes: {
-              ProductDetailScreen.routeName: (context) => const ProductDetailScreen(),
-              CartScreen.routeName: (context) => const CartScreen(),
-              OrdersScreen.routeName: (context) => const OrdersScreen(),
-              UserProductsScreen.routeName: (context) => const UserProductsScreen(),
-              EditProductScreen.routeName: (context) => const EditProductScreen(),
-            },
+          child: Consumer<AuthProvider>(
+            builder: (context, auth, child) => MaterialApp(
+              title: 'Flutter Demo',
+              theme: ThemeData(
+                  colorScheme:
+                      lightColorScheme ?? MyApp._defaultLightColorScheme,
+                  useMaterial3: true,
+                  fontFamily: 'Lato'),
+              darkTheme: ThemeData(
+                  colorScheme: darkColorScheme ?? MyApp._defaultDarkColorScheme,
+                  useMaterial3: true,
+                  fontFamily: 'Lato'),
+              themeMode: ThemeMode.system,
+              home: auth.isAuth ? const ProductsOverviewScreen() : const AuthScreen(),
+              routes: {
+                ProductDetailScreen.routeName: (context) => const ProductDetailScreen(),
+                CartScreen.routeName: (context) => const CartScreen(),
+                OrdersScreen.routeName: (context) => const OrdersScreen(),
+                UserProductsScreen.routeName: (context) => const UserProductsScreen(),
+                EditProductScreen.routeName: (context) => const EditProductScreen(),
+                ProductsOverviewScreen.routeName: (context) => const ProductsOverviewScreen(),
+              },
+            ),
           ),
         );
       },

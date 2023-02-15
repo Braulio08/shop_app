@@ -10,6 +10,7 @@ import 'package:badges/badges.dart' as badges;
 
 class ProductsOverviewScreen extends StatefulWidget {
   const ProductsOverviewScreen({super.key});
+  static const routeName = '/products-overview-screen';
 
   @override
   State<ProductsOverviewScreen> createState() => _ProductsOverviewScreenState();
