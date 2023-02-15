@@ -1,6 +1,9 @@
 import 'dart:math';
-
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
+import '../models/http_exception.dart';
+
+import '../providers/auth_provider.dart';
 
 enum AuthMode { signup, login }
 
@@ -96,7 +99,23 @@ class _AuthCardState extends State<AuthCard> {
   var _isLoading = false;
   final _passwordController = TextEditingController();
 
-  void _submit() {
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('An error occurred'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Ok'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) {
       // Invalid!
       return;
@@ -105,11 +124,56 @@ class _AuthCardState extends State<AuthCard> {
     setState(() {
       _isLoading = true;
     });
-    if (_authMode == AuthMode.login) {
-      // Log user in
-    } else {
-      // Sign user up
+    try {
+      if (_authMode == AuthMode.login) {
+        // Log user in
+        await Provider.of<AuthProvider>(context, listen: false)
+            .signInWithPassword(
+          _authData['email'].toString(),
+          _authData['password'].toString(),
+        );
+      } else {
+        // Sign user up
+        await Provider.of<AuthProvider>(context, listen: false).signUp(
+          _authData['email'].toString(),
+          _authData['password'].toString(),
+        );
+      }
+    } on HttpException catch (e) {
+      var errorMessage = 'Authenticate failed';
+      switch (e.toString()) {
+        case 'EMAIL_EXISTS':
+          errorMessage =
+              'The email address is already in use by another account.';
+          break;
+        case 'OPERATION_NOT_ALLOWED':
+          errorMessage = 'Password sign-in is disabled for this project.';
+          break;
+        case 'TOO_MANY_ATTEMPTS_TRY_LATER':
+          errorMessage =
+              'We have blocked all requests from this device due to unusual activity. Try again later.';
+          break;
+        case 'EMAIL_NOT_FOUND':
+          errorMessage =
+              'There is no user record corresponding to this identifier. The user may have been deleted.';
+          break;
+        case 'INVALID_PASSWORD':
+          errorMessage =
+              'The password is invalid or the user does not have a password.';
+          break;
+        case 'USER_DISABLED':
+          errorMessage =
+              'The user account has been disabled by an administrator.';
+          break;
+        default:
+          errorMessage = 'Authenticate failed';
+      }
+      _showErrorDialog(errorMessage);
+    } on Exception catch (e) {
+      var errorMessage = 'Could not authenticate you. Please try again later';
+      _showErrorDialog(errorMessage);
     }
+
     setState(() {
       _isLoading = false;
     });

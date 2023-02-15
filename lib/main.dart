@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
+import './providers/auth_provider.dart';
 import './screens/edit_product_screen.dart';
 import './screens/user_products_screen.dart';
 import './screens/orders_screen.dart';
@@ -11,8 +12,10 @@ import './screens/product_detail_screen.dart';
 import './providers/products_provider.dart';
 import 'package:provider/provider.dart';
 import './screens/auth_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+Future main() async{
+  await dotenv.load(fileName: ".env");
   runApp(const MyApp());
 }
 
@@ -40,6 +43,9 @@ class MyApp extends StatelessWidget {
             ),
             ChangeNotifierProvider(
               create: (context) => OrdersProvider(),
+            ),
+            ChangeNotifierProvider(
+              create: (context) => AuthProvider(),
             ),
           ],
           child: MaterialApp(
