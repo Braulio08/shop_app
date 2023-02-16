@@ -35,10 +35,14 @@ class MyApp extends StatelessWidget {
       builder: (lightColorScheme, darkColorScheme) {
         return MultiProvider(
           providers: [
+            ChangeNotifierProvider(
+              create: (context) => AuthProvider(),
+            ),
             ChangeNotifierProxyProvider<AuthProvider, ProductsProvider>(
-              create: (context) => ProductsProvider('', []),
+              create: (context) => ProductsProvider('', '', []),
               update: (context, authProvider, previous) => ProductsProvider(
                   authProvider.token.toString(),
+                  authProvider.userId.toString(),
                   previous == null ? [] : previous.items),
             ),
             ChangeNotifierProxyProvider<AuthProvider, OrdersProvider>(
@@ -50,9 +54,7 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(
               create: (context) => CartProvider(),
             ),
-            ChangeNotifierProvider(
-              create: (context) => AuthProvider(),
-            ),
+            
           ],
           child: Consumer<AuthProvider>(
             builder: (context, auth, child) => MaterialApp(

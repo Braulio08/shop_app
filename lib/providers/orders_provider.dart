@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/models/order_item.dart';
+import '../models/order_item.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/cart_item.dart';
-import '../providers/auth_provider.dart';
 
 class OrdersProvider with ChangeNotifier {
   List<OrderItem> _orders = [];
