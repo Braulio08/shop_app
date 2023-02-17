@@ -12,13 +12,14 @@ class OrdersProvider with ChangeNotifier {
   }
 
   final String authToken;
+  final String userId;
 
-  OrdersProvider(this.authToken, this._orders);
+  OrdersProvider(this.authToken, this.userId, this._orders);
 
-  Future<void> fetchAndSerProducts() async {
+  Future<void> fetchAndSetOrders() async {
     var url = Uri.https(
       'flutter-example-2df85-default-rtdb.firebaseio.com',
-      '/orders.json',
+      '/orders/$userId.json',
       {
         'auth': authToken,
       },
@@ -27,7 +28,7 @@ class OrdersProvider with ChangeNotifier {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       final List<OrderItem> loadedOrders = [];
-      if (extractedData == null) {
+      if (extractedData.isEmpty || extractedData['error'] != null) {
         return;
       }
       extractedData.forEach(
@@ -61,7 +62,7 @@ class OrdersProvider with ChangeNotifier {
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
     var url = Uri.https(
       'flutter-example-2df85-default-rtdb.firebaseio.com',
-      '/orders.json',
+      '/orders/$userId.json',
       {
         'auth': authToken,
       },

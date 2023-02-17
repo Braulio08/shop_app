@@ -48,19 +48,24 @@ class ProductsProvider with ChangeNotifier {
     return [..._items];
   }
 
-  Future<void> fetchAndSerProducts() async {
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
     var url = Uri.https(
       'flutter-example-2df85-default-rtdb.firebaseio.com',
       '/products.json',
-      {
-        'auth': authToken,
-      },
+      filterByUser
+          ? {
+              'auth': authToken,
+              'orderBy': '"creatorId"',
+              'equalTo': '"$userId"',
+            }
+          : {
+              'auth': authToken,
+            },
     );
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
-
-      if (extractedData == null) {
+      if (extractedData.isEmpty || extractedData['error'] != null) {
         return;
       }
       url = Uri.https(
@@ -83,8 +88,10 @@ class ProductsProvider with ChangeNotifier {
               price: prodData['price'],
               imageUrl: prodData['imageUrl'],
               isFavorite: favoriteData == null
-                  ? false
-                  : favoriteData[prodId]['isFavorite'] ?? false,
+                ? false
+                : favoriteData[prodId] == null
+                    ? false
+                    : favoriteData[prodId]['isFavorite'],
             ),
           );
         },
@@ -111,6 +118,7 @@ class ProductsProvider with ChangeNotifier {
             'description': product.description,
             'imageUrl': product.imageUrl,
             'price': product.price,
+            'creatorId': userId,
           }));
       final newProduct = Product(
           id: json.decode(response.body)['name'],
