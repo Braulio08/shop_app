@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
+import './screens/splash_screen.dart';
 import './providers/auth_provider.dart';
 import './screens/edit_product_screen.dart';
 import './screens/user_products_screen.dart';
@@ -55,7 +56,6 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(
               create: (context) => CartProvider(),
             ),
-            
           ],
           child: Consumer<AuthProvider>(
             builder: (context, auth, child) => MaterialApp(
@@ -72,18 +72,19 @@ class MyApp extends StatelessWidget {
               themeMode: ThemeMode.system,
               home: auth.isAuth
                   ? const ProductsOverviewScreen()
-                  : const AuthScreen(),
+                  : FutureBuilder(
+                      future: auth.tryAutoLogin(),
+                      builder: (context, snapshot) => snapshot.connectionState == ConnectionState.waiting
+                              ? const SplashScreen()
+                              : const AuthScreen(),
+                    ),
               routes: {
-                ProductDetailScreen.routeName: (context) =>
-                    const ProductDetailScreen(),
+                ProductDetailScreen.routeName: (context) => const ProductDetailScreen(),
                 CartScreen.routeName: (context) => const CartScreen(),
                 OrdersScreen.routeName: (context) => const OrdersScreen(),
-                UserProductsScreen.routeName: (context) =>
-                    const UserProductsScreen(),
-                EditProductScreen.routeName: (context) =>
-                    const EditProductScreen(),
-                ProductsOverviewScreen.routeName: (context) =>
-                    const ProductsOverviewScreen(),
+                UserProductsScreen.routeName: (context) => const UserProductsScreen(),
+                EditProductScreen.routeName: (context) => const EditProductScreen(),
+                ProductsOverviewScreen.routeName: (context) => const ProductsOverviewScreen(),
               },
             ),
           ),
