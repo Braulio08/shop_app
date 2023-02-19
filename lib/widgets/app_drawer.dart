@@ -26,8 +26,13 @@ class AppDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.payment),
             title: const Text('Orders'),
-            onTap: () => Navigator.of(context)
-                .pushReplacementNamed(OrdersScreen.routeName),
+            onTap: () => Navigator.of(context).pushReplacementNamed(OrdersScreen.routeName),
+            // Navigator.of(context).pushReplacement(
+            //   CustomRoute(
+            //     builder: (context) => const OrdersScreen(),
+            //     settings: const RouteSettings(),
+            //   ),
+            // ),
           ),
           const Divider(),
           ListTile(

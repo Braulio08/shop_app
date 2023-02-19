@@ -13,51 +13,59 @@ class ProductDetailScreen extends StatelessWidget {
         AppBar(title: Text(product.title), centerTitle: true);
 
     return Scaffold(
-      appBar: appBar,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(15),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: SizedBox(
-                  height: (mediaQuery.size.height -
-                          appBar.preferredSize.height -
-                          mediaQuery.padding.top) *
-                      0.4,
-                  width: double.infinity,
-                  child: Image.network(
-                    product.imageUrl,
-                    fit: BoxFit.cover,
-                  ),
+      // appBar: appBar,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: (mediaQuery.size.height -
+                    appBar.preferredSize.height -
+                    mediaQuery.padding.top) *
+                0.4,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(product.title),
+              centerTitle: true,
+              background: Hero(
+                tag: product.id,
+                child: Image.network(
+                  product.imageUrl,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
-            const SizedBox(
-              height: 10,
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                const SizedBox(
+                  height: 10,
+                ),
+                Chip(
+                  label: Text(
+                    '\$${product.price}',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  width: double.infinity,
+                  child: Text(
+                    product.description,
+                    style: Theme.of(context).textTheme.titleLarge,
+                    textAlign: TextAlign.center,
+                    softWrap: true,
+                  ),
+                ),
+                const SizedBox(
+                  height: 800,
+                ),
+              ],
             ),
-            Chip(
-              label: Text(
-                '\$${product.price}',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              width: double.infinity,
-              child: Text(
-                product.description,
-                style: Theme.of(context).textTheme.titleLarge,
-                textAlign: TextAlign.center,
-                softWrap: true,
-              ),
-            )
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

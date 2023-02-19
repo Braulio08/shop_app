@@ -101,18 +101,19 @@ class _AuthCardState extends State<AuthCard>
   var _isLoading = false;
   final _passwordController = TextEditingController();
   late AnimationController _animationController;
-  late Animation<Size> _heightAnimation;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _opacityAnimation;
 
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(seconds: 1),
     );
-    _heightAnimation = Tween<Size>(
-      begin: const Size(double.infinity, 270),
-      end: const Size(double.infinity, 330),
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, -1.5),
+      end: const Offset(0, 0),
     ).animate(
       CurvedAnimation(
         parent: _animationController,
@@ -122,6 +123,15 @@ class _AuthCardState extends State<AuthCard>
     // _heightAnimation.addListener(
     //   () => setState(() {}),
     // );
+    _opacityAnimation = Tween(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeIn,
+      ),
+    );
   }
 
   @override
@@ -236,24 +246,24 @@ class _AuthCardState extends State<AuthCard>
       child: AnimatedContainer(
         duration: const Duration(seconds: 1),
         curve: Curves.bounceOut,
-          // height: _heightAnimation.value.height,
-          height: _authMode == AuthMode.signup
-              ? 330
-              //deviceSize.height * 0.75
-              : 270
-          //deviceSize.height * 0.35
-          ,
-          constraints: BoxConstraints(
+        // height: _heightAnimation.value.height,
+        height: _authMode == AuthMode.signup
+            ? 330
+            //deviceSize.height * 0.75
+            : 270
+        //deviceSize.height * 0.35
+        ,
+        constraints: BoxConstraints(
             // minHeight: _heightAnimation.value.height,
             minHeight: _authMode == AuthMode.signup
                 ? 330
                 //deviceSize.height * 0.75
                 : 270
             //deviceSize.height * 0.35
-          ),
-          width: deviceSize.width * 0.75,
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
+            ),
+        width: deviceSize.width * 0.75,
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
           key: _formKey,
           child: SingleChildScrollView(
             child: Column(
@@ -285,21 +295,32 @@ class _AuthCardState extends State<AuthCard>
                     _authData['password'] = value!;
                   },
                 ),
-                if (_authMode == AuthMode.signup)
-                  TextFormField(
-                    enabled: _authMode == AuthMode.signup,
-                    decoration:
-                        const InputDecoration(labelText: 'Confirm Password'),
-                    obscureText: true,
-                    validator: _authMode == AuthMode.signup
-                        ? (value) {
-                            if (value != _passwordController.text) {
-                              return 'Passwords do not match!';
-                            }
-                            return null;
-                          }
-                        : null,
+                AnimatedContainer(
+                  constraints: BoxConstraints(
+                      minHeight: _authMode == AuthMode.signup ? 60 : 0,
+                      maxHeight: _authMode == AuthMode.signup ? 120 : 0),
+                  duration: const Duration(milliseconds: 300),
+                  child: FadeTransition(
+                    opacity: _opacityAnimation,
+                    child: SlideTransition(
+                      position: _slideAnimation,
+                      child: TextFormField(
+                        enabled: _authMode == AuthMode.signup,
+                        decoration:
+                            const InputDecoration(labelText: 'Confirm Password'),
+                        obscureText: true,
+                        validator: _authMode == AuthMode.signup
+                            ? (value) {
+                                if (value != _passwordController.text) {
+                                  return 'Passwords do not match!';
+                                }
+                                return null;
+                              }
+                            : null,
+                      ),
+                    ),
                   ),
+                ),
                 const SizedBox(
                   height: 20,
                 ),

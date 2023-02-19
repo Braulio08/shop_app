@@ -23,8 +23,8 @@ class ProductItem extends StatelessWidget {
             builder: (context, product, _) => IconButton(
               icon: Icon(
                   product.isFavorite ? Icons.favorite : Icons.favorite_border),
-              onPressed: () =>
-                  product.toggleFavoriteStatus(authData.token.toString(), authData.userId.toString()),
+              onPressed: () => product.toggleFavoriteStatus(
+                  authData.token.toString(), authData.userId.toString()),
             ),
           ),
           title: Text(
@@ -50,9 +50,14 @@ class ProductItem extends StatelessWidget {
         child: GestureDetector(
           onTap: () => Navigator.of(context)
               .pushNamed(ProductDetailScreen.routeName, arguments: product),
-          child: Image.network(
-            product.imageUrl,
-            fit: BoxFit.cover,
+          child: Hero(
+            tag: product.id,
+            child: FadeInImage(
+              placeholder:
+                  const AssetImage('assets/images/product-placeholder.png'),
+              image: NetworkImage(product.imageUrl),
+              fit: BoxFit.cover,
+            ),
           ),
         ),
       ),

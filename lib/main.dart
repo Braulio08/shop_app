@@ -14,6 +14,7 @@ import './providers/products_provider.dart';
 import 'package:provider/provider.dart';
 import './screens/auth_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import './helpers/custom_route.dart';
 
 Future main() async {
   await dotenv.load(fileName: ".env");
@@ -61,10 +62,16 @@ class MyApp extends StatelessWidget {
             builder: (context, auth, child) => MaterialApp(
               title: 'Flutter Demo',
               theme: ThemeData(
-                  colorScheme:
-                      lightColorScheme ?? MyApp._defaultLightColorScheme,
-                  useMaterial3: true,
-                  fontFamily: 'Lato'),
+                colorScheme: lightColorScheme ?? MyApp._defaultLightColorScheme,
+                useMaterial3: true,
+                fontFamily: 'Lato',
+                pageTransitionsTheme: PageTransitionsTheme(
+                  builders: {
+                    TargetPlatform.android: CustomPageTransitionBuilder(),
+                    TargetPlatform.iOS: CustomPageTransitionBuilder(),
+                  },
+                ),
+              ),
               darkTheme: ThemeData(
                   colorScheme: darkColorScheme ?? MyApp._defaultDarkColorScheme,
                   useMaterial3: true,
@@ -74,17 +81,22 @@ class MyApp extends StatelessWidget {
                   ? const ProductsOverviewScreen()
                   : FutureBuilder(
                       future: auth.tryAutoLogin(),
-                      builder: (context, snapshot) => snapshot.connectionState == ConnectionState.waiting
+                      builder: (context, snapshot) =>
+                          snapshot.connectionState == ConnectionState.waiting
                               ? const SplashScreen()
                               : const AuthScreen(),
                     ),
               routes: {
-                ProductDetailScreen.routeName: (context) => const ProductDetailScreen(),
+                ProductDetailScreen.routeName: (context) =>
+                    const ProductDetailScreen(),
                 CartScreen.routeName: (context) => const CartScreen(),
                 OrdersScreen.routeName: (context) => const OrdersScreen(),
-                UserProductsScreen.routeName: (context) => const UserProductsScreen(),
-                EditProductScreen.routeName: (context) => const EditProductScreen(),
-                ProductsOverviewScreen.routeName: (context) => const ProductsOverviewScreen(),
+                UserProductsScreen.routeName: (context) =>
+                    const UserProductsScreen(),
+                EditProductScreen.routeName: (context) =>
+                    const EditProductScreen(),
+                ProductsOverviewScreen.routeName: (context) =>
+                    const ProductsOverviewScreen(),
               },
             ),
           ),
